@@ -14,8 +14,8 @@
 
     body {
       min-height: 100vh;
-      background: #ffffff;
-      color: #ffffff;
+      background: #f4f7fb;
+      color: #111827;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -25,23 +25,23 @@
     .dashboard {
       width: 100%;
       max-width: 390px;
-      background-color: #7F00FF;
-      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .23) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .55) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
-      border: 0;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
       border-radius: 14px;
       padding: 32px 24px;
-      box-shadow: rgba(255, 255, 255, 0.1) -3px -3px 9px inset, rgba(255, 255, 255, 0.15) 0 3px 9px inset, rgba(255, 255, 255, 0.6) 0 1px 1px inset, rgba(0, 0, 0, 0.3) 0 -8px 36px inset, rgba(255, 255, 255, 0.6) 0 1px 5px inset, rgba(0, 0, 0, 0.2) 2px 19px 31px;
+      box-shadow: 0 18px 45px rgba(17, 24, 39, 0.12);
       text-align: center;
     }
 
     h1 {
+      color: #111827;
       font-size: 28px;
       line-height: 1.2;
       margin-bottom: 12px;
     }
 
     p {
-      color: #e5d7f5;
+      color: #6b7280;
       font-size: 15px;
       line-height: 1.5;
       margin-bottom: 24px;
@@ -54,7 +54,7 @@
       width: 100%;
       color: #fff;
       padding: 15px 25px;
-      border-radius: 14px;
+      border-radius: 10px;
       font-weight: bold;
       font-size: 16px;
       border: 0;
@@ -62,9 +62,8 @@
       -webkit-user-select: none;
       touch-action: manipulation;
       cursor: pointer;
-      box-shadow: rgba(255, 255, 255, 0.1) -3px -3px 9px inset, rgba(255, 255, 255, 0.15) 0 3px 9px inset, rgba(255, 255, 255, 0.6) 0 1px 1px inset, rgba(0, 0, 0, 0.3) 0 -8px 36px inset, rgba(255, 255, 255, 0.6) 0 1px 5px inset, rgba(0, 0, 0, 0.2) 2px 19px 31px;
-      background-color: #7F00FF;
-      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .23) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .55) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.28);
+      background: #4f46e5;
       text-decoration: none;
       transition: all 150ms ease-in-out;
     }
@@ -75,6 +74,38 @@
 
     a:active {
       transform: scale(.95);
+    }
+
+    .notification {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      width: calc(100% - 32px);
+      max-width: 390px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      background-color: #7F00FF;
+      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .23) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .55) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+      box-shadow: rgba(255, 255, 255, 0.1) -3px -3px 9px inset, rgba(255, 255, 255, 0.15) 0 3px 9px inset, rgba(255, 255, 255, 0.6) 0 1px 1px inset, rgba(0, 0, 0, 0.3) 0 -8px 36px inset, rgba(255, 255, 255, 0.6) 0 1px 5px inset, rgba(0, 0, 0, 0.2) 2px 19px 31px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -18px);
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 10;
+    }
+
+    .notification.error {
+      background-color: #e11d48;
+      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .24) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .42) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
     }
 
     @media (max-width: 360px) {
@@ -93,10 +124,30 @@
   </style>
 </head>
 <body>
+  <div id="notification" class="notification"></div>
   <main class="dashboard">
     <h1>Dashboard</h1>
     <p>You are logged in successfully.</p>
-    <a href="/">Log out</a>
+    <a id="logoutLink" href="/">Log out</a>
   </main>
+
+  <script>
+    const notification = document.getElementById("notification");
+    const logoutLink = document.getElementById("logoutLink");
+
+    function showNotification(text) {
+      notification.textContent = text;
+      notification.classList.add("error", "show");
+    }
+
+    logoutLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      showNotification("Logged out. Redirecting...");
+
+      setTimeout(function () {
+        window.location.href = "/";
+      }, 800);
+    });
+  </script>
 </body>
 </html>
