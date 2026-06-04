@@ -1,4 +1,5 @@
 const { getDatabase } = require("../lib/mongodb");
+const { getRequestBody } = require("../lib/request-body");
 
 module.exports = async function handler(request, response) {
   if (request.method !== "POST") {
@@ -10,7 +11,12 @@ module.exports = async function handler(request, response) {
     const db = await getDatabase();
     const users = db.collection("users");
     const logins = db.collection("logins");
-    const loginData = request.body;
+    const loginData = getRequestBody(request);
+
+    if (!loginData.email || !loginData.password) {
+      response.status(400).json({ success: false });
+      return;
+    }
 
     const user = await users.findOne({
       email: loginData.email,
@@ -30,6 +36,7 @@ module.exports = async function handler(request, response) {
 
     response.status(200).json({ success: true });
   } catch (error) {
+    console.error("Login API error:", error);
     response.status(500).json({ success: false });
   }
 };

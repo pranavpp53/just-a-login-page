@@ -1,4 +1,5 @@
 const { getDatabase } = require("../lib/mongodb");
+const { getRequestBody } = require("../lib/request-body");
 
 module.exports = async function handler(request, response) {
   if (request.method !== "POST") {
@@ -9,7 +10,12 @@ module.exports = async function handler(request, response) {
   try {
     const db = await getDatabase();
     const users = db.collection("users");
-    const signupData = request.body;
+    const signupData = getRequestBody(request);
+
+    if (!signupData.email || !signupData.username || !signupData.password) {
+      response.status(400).json({ success: false });
+      return;
+    }
 
     await users.insertOne({
       email: signupData.email,
@@ -25,6 +31,7 @@ module.exports = async function handler(request, response) {
       return;
     }
 
+    console.error("Signup API error:", error);
     response.status(500).json({ success: false });
   }
 };
