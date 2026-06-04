@@ -185,26 +185,21 @@
         password: document.getElementById("password").value
       };
 
-      try {
-        const response = await fetch("/save-signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(formData)
-        });
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const existingUser = users.find(user => user.email === formData.email);
 
-        if (!response.ok) {
-          throw new Error("Could not save signup data.");
-        }
-
-        message.textContent = "Signup successful. Redirecting...";
-        setTimeout(function () {
-          window.location.href = "/";
-        }, 800);
-      } catch (error) {
-        message.textContent = "Error saving signup data.";
+      if (existingUser) {
+        message.textContent = "This email is already signed up.";
+        return;
       }
+
+      users.push(formData);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      message.textContent = "Signup successful. Redirecting...";
+      setTimeout(function () {
+        window.location.href = "/";
+      }, 800);
     });
   </script>
 </body>
