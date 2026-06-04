@@ -1,0 +1,32 @@
+[
+  {
+    "email": "test@example.com",
+    "password": "test123",
+    "remember": false,
+    "createdAt": "2026-06-04T06:10:32.758Z"
+  },
+  {
+    "email": "dasn@gmail.com",
+    "password": "123",
+    "remember": false,
+    "createdAt": "2026-06-04T06:11:30.489Z"
+  },
+  {
+    "email": "dasn@gmail.com",
+    "password": "123",
+    "remember": false,
+    "createdAt": "2026-06-04T06:12:05.210Z"
+  },
+  {
+    "email": "dasn@gmail.com",
+    "password": "123",
+    "remember": false,
+    "createdAt": "2026-06-04T06:18:45.821Z"
+  },
+  {
+    "email": "dasn@gmail.com",
+    "password": "123",
+    "remember": false,
+    "createdAt": "2026-06-04T08:50:51.272Z"
+  }
+]

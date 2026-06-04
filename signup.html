@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Signup</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #000000;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .signup-screen {
+      width: 100%;
+      max-width: 390px;
+      background-color: #7F00FF;
+      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .23) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .55) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+      border: 0;
+      border-radius: 14px;
+      padding: 32px 24px;
+      box-shadow: rgba(255, 255, 255, 0.1) -3px -3px 9px inset, rgba(255, 255, 255, 0.15) 0 3px 9px inset, rgba(255, 255, 255, 0.6) 0 1px 1px inset, rgba(0, 0, 0, 0.3) 0 -8px 36px inset, rgba(255, 255, 255, 0.6) 0 1px 5px inset, rgba(0, 0, 0, 0.2) 2px 19px 31px;
+    }
+
+    .brand {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      background: #246bfe;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 28px;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #c9d0dc;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      border: 0;
+      border-radius: 1em;
+      padding: 0 14px;
+      font-size: 16px;
+      color: #ffffff;
+      background: #7F00FF;
+      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .23) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .35) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+      margin-bottom: 18px;
+      box-shadow: none;
+    }
+
+    input:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    button {
+      width: 100%;
+      color: #fff;
+      padding: 15px 25px;
+      border-radius: 14px;
+      font-weight: bold;
+      font-size: 16px;
+      border: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      cursor: pointer;
+      box-shadow: rgba(255, 255, 255, 0.1) -3px -3px 9px inset, rgba(255, 255, 255, 0.15) 0 3px 9px inset, rgba(255, 255, 255, 0.6) 0 1px 1px inset, rgba(0, 0, 0, 0.3) 0 -8px 36px inset, rgba(255, 255, 255, 0.6) 0 1px 5px inset, rgba(0, 0, 0, 0.2) 2px 19px 31px;
+      background-color: #7F00FF;
+      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .23) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .55) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+      transition: all 150ms ease-in-out;
+    }
+
+    button:hover {
+      filter: brightness(1.05);
+    }
+
+    button:active {
+      transform: scale(.95);
+    }
+
+    a {
+      color: #246bfe;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .message {
+      color: #ffffff;
+      font-size: 14px;
+      margin-top: 16px;
+      min-height: 20px;
+      text-align: center;
+    }
+
+    .login-link {
+      text-align: center;
+      color: #c9d0dc;
+      font-size: 14px;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 360px) {
+      body {
+        padding: 16px;
+      }
+
+      .signup-screen {
+        padding: 28px 18px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="signup-screen">
+    <div class="brand">S</div>
+    <h1>Create account</h1>
+    <p class="subtitle">Enter your details to sign up.</p>
+
+    <form id="signupForm">
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" placeholder="Choose a username" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="Create a password" required>
+
+      <button type="submit">Sign up</button>
+    </form>
+
+    <p id="message" class="message"></p>
+    <p class="login-link">Already have an account? <a href="/">Log in</a></p>
+  </main>
+
+  <script>
+    const signupForm = document.getElementById("signupForm");
+    const message = document.getElementById("message");
+
+    signupForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const formData = {
+        email: document.getElementById("email").value,
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value
+      };
+
+      try {
+        const response = await fetch("/save-signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error("Could not save signup data.");
+        }
+
+        message.textContent = "Signup successful. Redirecting...";
+        setTimeout(function () {
+          window.location.href = "/";
+        }, 800);
+      } catch (error) {
+        message.textContent = "Error saving signup data.";
+      }
+    });
+  </script>
+</body>
+</html>
