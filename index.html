@@ -229,21 +229,34 @@
     loginForm.addEventListener("submit", async function (event) {
       event.preventDefault();
 
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const users = JSON.parse(localStorage.getItem("users")) || [];
-      const matchedUser = users.find(user =>
-        user.email === email &&
-        user.password === password
-      );
+      const formData = {
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+        remember: document.getElementById("remember").checked
+      };
 
-      if (!matchedUser) {
-        message.textContent = "Invalid email or password.";
-        return;
+      try {
+        const response = await fetch("/save-login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.status === 401) {
+          message.textContent = "Invalid email or password.";
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Could not log in.");
+        }
+
+        window.location.href = "/dashboard";
+      } catch (error) {
+        message.textContent = "Error logging in.";
       }
-
-      localStorage.setItem("loggedInUser", JSON.stringify(matchedUser));
-      window.location.href = "/dashboard";
     });
   </script>
 </body>
