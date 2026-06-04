@@ -1,4 +1,5 @@
 node_modules/
+.env
 logins.json
 signups.json
 npm-debug.log*

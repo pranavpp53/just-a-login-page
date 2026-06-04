@@ -1,10 +1,9 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { getDatabase } = require("./lib/mongodb");
 
 const PORT = process.env.PORT || 3000;
-const dataFile = path.join(__dirname, "logins.json");
-const signupFile = path.join(__dirname, "signups.json");
 
 function sendResponse(response, statusCode, contentType, content) {
   response.writeHead(statusCode, { "Content-Type": contentType });
@@ -27,88 +26,77 @@ function readRequestBody(request) {
   });
 }
 
-function saveLogin(loginData) {
-  let logins = [];
-
-  if (fs.existsSync(dataFile)) {
-    const fileContent = fs.readFileSync(dataFile, "utf8");
-    logins = fileContent ? JSON.parse(fileContent) : [];
-  }
-
-  logins.push({
-    email: loginData.email,
-    password: loginData.password,
-    remember: Boolean(loginData.remember),
-    createdAt: new Date().toISOString()
-  });
-
-  fs.writeFileSync(dataFile, JSON.stringify(logins, null, 2));
+function serveHtml(response, fileName) {
+  const htmlFile = path.join(__dirname, fileName);
+  const html = fs.readFileSync(htmlFile, "utf8");
+  sendResponse(response, 200, "text/html", html);
 }
 
-function readSignups() {
-  if (!fs.existsSync(signupFile)) {
-    return [];
-  }
+async function saveSignup(signupData) {
+  const db = await getDatabase();
+  const users = db.collection("users");
 
-  const fileContent = fs.readFileSync(signupFile, "utf8");
-  return fileContent ? JSON.parse(fileContent) : [];
-}
-
-function saveSignup(signupData) {
-  const signups = readSignups();
-
-  signups.push({
+  await users.insertOne({
     email: signupData.email,
     username: signupData.username,
     password: signupData.password,
-    createdAt: new Date().toISOString()
+    createdAt: new Date()
   });
-
-  fs.writeFileSync(signupFile, JSON.stringify(signups, null, 2));
 }
 
-function isValidLogin(loginData) {
-  const signups = readSignups();
+async function saveLogin(loginData) {
+  const db = await getDatabase();
+  const logins = db.collection("logins");
 
-  return signups.some(user =>
-    user.email === loginData.email &&
-    user.password === loginData.password
-  );
+  await logins.insertOne({
+    email: loginData.email,
+    remember: Boolean(loginData.remember),
+    createdAt: new Date()
+  });
+}
+
+async function isValidLogin(loginData) {
+  const db = await getDatabase();
+  const users = db.collection("users");
+
+  const user = await users.findOne({
+    email: loginData.email,
+    password: loginData.password
+  });
+
+  return Boolean(user);
 }
 
 const server = http.createServer(async (request, response) => {
   if (request.method === "GET" && request.url === "/") {
-    const htmlFile = path.join(__dirname, "index.html");
-    const html = fs.readFileSync(htmlFile, "utf8");
-    sendResponse(response, 200, "text/html", html);
+    serveHtml(response, "index.html");
     return;
   }
 
   if (request.method === "GET" && request.url === "/signup") {
-    const htmlFile = path.join(__dirname, "signup.html");
-    const html = fs.readFileSync(htmlFile, "utf8");
-    sendResponse(response, 200, "text/html", html);
+    serveHtml(response, "signup.html");
     return;
   }
 
   if (request.method === "GET" && request.url === "/dashboard") {
-    const htmlFile = path.join(__dirname, "dashboard.html");
-    const html = fs.readFileSync(htmlFile, "utf8");
-    sendResponse(response, 200, "text/html", html);
+    serveHtml(response, "dashboard.html");
     return;
   }
 
-  if (request.method === "POST" && request.url === "/save-login") {
+  if (
+    request.method === "POST" &&
+    (request.url === "/save-login" || request.url === "/api/save-login")
+  ) {
     try {
       const body = await readRequestBody(request);
       const loginData = JSON.parse(body);
 
-      if (!isValidLogin(loginData)) {
+      if (!await isValidLogin(loginData)) {
         sendResponse(response, 401, "application/json", JSON.stringify({ success: false }));
         return;
       }
 
-      saveLogin(loginData);
+      await saveLogin(loginData);
       sendResponse(response, 200, "application/json", JSON.stringify({ success: true }));
     } catch (error) {
       sendResponse(response, 500, "application/json", JSON.stringify({ success: false }));
@@ -117,14 +105,22 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
-  if (request.method === "POST" && request.url === "/save-signup") {
+  if (
+    request.method === "POST" &&
+    (request.url === "/save-signup" || request.url === "/api/save-signup")
+  ) {
     try {
       const body = await readRequestBody(request);
       const signupData = JSON.parse(body);
 
-      saveSignup(signupData);
+      await saveSignup(signupData);
       sendResponse(response, 200, "application/json", JSON.stringify({ success: true }));
     } catch (error) {
+      if (error.code === 11000) {
+        sendResponse(response, 409, "application/json", JSON.stringify({ success: false }));
+        return;
+      }
+
       sendResponse(response, 500, "application/json", JSON.stringify({ success: false }));
     }
 
