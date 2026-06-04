@@ -2,7 +2,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const dataFile = path.join(__dirname, "logins.json");
 const signupFile = path.join(__dirname, "signups.json");
 

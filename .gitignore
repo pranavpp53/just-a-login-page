@@ -1,0 +1,4 @@
+node_modules/
+logins.json
+signups.json
+npm-debug.log*

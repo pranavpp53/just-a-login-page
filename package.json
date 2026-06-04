@@ -1,0 +1,12 @@
+{
+  "name": "login-signup-app",
+  "version": "1.0.0",
+  "description": "Simple login and signup app with Node.js routing.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
