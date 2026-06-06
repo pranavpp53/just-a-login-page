@@ -321,6 +321,7 @@
       }
     }
   </style>
+  <script src="/public/browser-image-compression.js"></script>
 </head>
 <body>
   <div id="notification" class="notification"></div>
@@ -369,6 +370,7 @@
     const userList = document.getElementById("userList");
     const dashboardMessage = document.getElementById("dashboardMessage");
     const currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
+    const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
     let notificationTimer;
 
     postImage.addEventListener("change", function () {
@@ -383,6 +385,16 @@
       if (!file.type.startsWith("image/")) {
         imagePreview.classList.remove("active");
         imagePreview.innerHTML = "";
+        showNotification("Only image formats are allowed.");
+        postImage.value = "";
+        return;
+      }
+
+      if (file.size > MAX_IMAGE_SIZE) {
+        imagePreview.classList.remove("active");
+        imagePreview.innerHTML = "";
+        showNotification("Image must be 2MB or smaller.");
+        postImage.value = "";
         return;
       }
 
@@ -445,6 +457,19 @@
         return;
       }
 
+      let fileToUpload = file;
+      try {
+        fileToUpload = await imageCompression(file, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true
+        });
+      } catch (error) {
+        console.error("Image compression failed:", error);
+        showNotification("Image compression failed. Try a smaller image.");
+        return;
+      }
+
       const reader = new FileReader();
 
       reader.onload = async function () {
@@ -490,7 +515,7 @@
         showNotification("Could not read image.");
       };
 
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(fileToUpload);
     });
 
     function showNotification(text, type = "error") {

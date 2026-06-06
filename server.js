@@ -121,6 +121,30 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
+  if (request.method === "GET" && pathname.startsWith("/public/")) {
+    const assetPath = path.join(__dirname, pathname);
+    if (fs.existsSync(assetPath) && fs.statSync(assetPath).isFile()) {
+      const ext = path.extname(assetPath).toLowerCase();
+      const mimeTypes = {
+        ".js": "application/javascript",
+        ".css": "text/css",
+        ".html": "text/html",
+        ".json": "application/json",
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".svg": "image/svg+xml",
+        ".map": "application/json"
+      };
+
+      response.writeHead(200, {
+        "Content-Type": mimeTypes[ext] || "application/octet-stream"
+      });
+      response.end(fs.readFileSync(assetPath));
+      return;
+    }
+  }
+
   if (pathname.startsWith("/api/")) {
     response.writeHead(404, { "Content-Type": "application/json" });
     response.end(JSON.stringify({ error: "Not found" }));
