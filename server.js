@@ -7,6 +7,8 @@ const usersApi = require("./api/users");
 const updateUser = require("./api/update-user");
 const deleteUser = require("./api/delete-user");
 const toggleBlock = require("./api/toggle-block");
+const uploadPost = require("./api/upload-post");
+const getLatestPost = require("./api/get-latest-post");
 
 const PORT = process.env.PORT || 3000;
 
@@ -85,6 +87,17 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
+  if (request.method === "POST" && pathname === "/api/upload-post") {
+    request.body = await readRequestBody(request);
+    await uploadPost(request, createApiResponse(response));
+    return;
+  }
+
+  if (request.method === "GET" && pathname === "/api/posts/latest") {
+    await getLatestPost(request, createApiResponse(response));
+    return;
+  }
+
   if (request.method === "GET" && pathname === "/api/users") {
     await usersApi(request, createApiResponse(response));
     return;
@@ -105,6 +118,12 @@ const server = http.createServer(async (request, response) => {
   if (request.method === "POST" && pathname === "/api/toggle-block") {
     request.body = await readRequestBody(request);
     await toggleBlock(request, createApiResponse(response));
+    return;
+  }
+
+  if (pathname.startsWith("/api/")) {
+    response.writeHead(404, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ error: "Not found" }));
     return;
   }
 

@@ -113,6 +113,43 @@
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.16);
     }
 
+    textarea {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 15px;
+      color: #111827;
+      background: #f9fafb;
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+      min-height: 90px;
+      resize: vertical;
+      margin-bottom: 18px;
+    }
+
+    .post-form {
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    .post-preview {
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    .post-preview img {
+      width: 100%;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .post-caption {
+      color: #374151;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
     .meta {
       color: #6b7280;
       font-size: 13px;
@@ -267,6 +304,23 @@
     <main class="dashboard">
       <h1>Dashboard</h1>
       <p id="dashboardMessage">You are logged in successfully.</p>
+
+      <form id="postForm" class="post-form">
+        <h2>Create Post</h2>
+        <label for="postImage">Post image</label>
+        <input id="postImage" name="postImage" type="file" accept="image/*">
+
+        <label for="postCaption">Caption</label>
+        <textarea id="postCaption" name="postCaption" placeholder="Write a caption..."></textarea>
+
+        <button type="submit" class="success">Add post</button>
+      </form>
+
+      <div id="postPreview" class="post-preview">
+        <h2>Latest Post</h2>
+        <div id="postContent" class="post-content"><p class="meta">No post added yet.</p></div>
+      </div>
+
       <a id="logoutLink" href="/">Log out</a>
     </main>
 
@@ -280,11 +334,104 @@
   <script>
     const notification = document.getElementById("notification");
     const logoutLink = document.getElementById("logoutLink");
+    const postForm = document.getElementById("postForm");
+    const postImage = document.getElementById("postImage");
+    const postCaption = document.getElementById("postCaption");
+    const postContent = document.getElementById("postContent");
     const adminPanel = document.getElementById("adminPanel");
     const userList = document.getElementById("userList");
     const dashboardMessage = document.getElementById("dashboardMessage");
     const currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
     let notificationTimer;
+
+    async function renderSavedPost() {
+      try {
+        const response = await fetch("/api/posts/latest");
+        if (!response.ok) {
+          const text = await response.text();
+          console.error("Failed to load latest post:", text);
+          postContent.innerHTML = "<p class=\"meta\">No post added yet.</p>";
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!data.post) {
+          postContent.innerHTML = "<p class=\"meta\">No post added yet.</p>";
+          return;
+        }
+
+        postContent.innerHTML = `
+          <img src="${escapeHtml(data.post.image)}" alt="Post image">
+          <p class="post-caption">${escapeHtml(data.post.caption)}</p>
+        `;
+      } catch (error) {
+        console.error(error);
+        postContent.innerHTML = "<p class=\"meta\">No post added yet.</p>";
+      }
+    }
+
+    postForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const file = postImage.files[0];
+      const caption = postCaption.value.trim();
+
+      if (!file) {
+        showNotification("Please choose an image.");
+        return;
+      }
+
+      if (!caption) {
+        showNotification("Please enter a caption.");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = async function () {
+        try {
+          const response = await fetch("/api/upload-post", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              image: reader.result,
+              caption: caption,
+              authorEmail: currentUser ? currentUser.email : null
+            })
+          });
+
+          let data;
+          if (!response.ok) {
+            const text = await response.text();
+            try {
+              data = JSON.parse(text);
+            } catch {
+              throw new Error(text || "Upload failed.");
+            }
+            throw new Error(data.error || text || "Upload failed.");
+          }
+
+          data = await response.json();
+
+          await renderSavedPost();
+          postCaption.value = "";
+          postImage.value = "";
+          showNotification("Post added successfully.", "success");
+        } catch (error) {
+          console.error(error);
+          showNotification(error.message || "Could not upload image.");
+        }
+      };
+
+      reader.onerror = function () {
+        showNotification("Could not read image.");
+      };
+
+      reader.readAsDataURL(file);
+    });
 
     function showNotification(text, type = "error") {
       clearTimeout(notificationTimer);
@@ -438,14 +585,18 @@
     if (!currentUser) {
       window.location.href = "/";
     } else {
-      dashboardMessage.textContent = isAdmin()
-        ? "You are logged in as admin."
-        : "You are logged in successfully.";
+      (async function initDashboard() {
+        dashboardMessage.textContent = isAdmin()
+          ? "You are logged in as admin."
+          : "You are logged in successfully.";
 
-      if (isAdmin()) {
-        adminPanel.style.display = "block";
-        loadUsers();
-      }
+        await renderSavedPost();
+
+        if (isAdmin()) {
+          adminPanel.style.display = "block";
+          loadUsers();
+        }
+      })();
     }
   </script>
 </body>
