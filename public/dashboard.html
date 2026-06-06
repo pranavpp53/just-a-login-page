@@ -30,7 +30,7 @@
     .user-card {
       background: #ffffff;
       border: 1px solid #e5e7eb;
-      border-radius: 40px;
+      border-radius: 14px;
       box-shadow: 0 18px 45px rgba(17, 24, 39, 0.12);
     }
 
@@ -169,6 +169,91 @@
       object-fit: cover;
     }
 
+    #viewMorePosts {
+      width: auto;
+      max-width: 220px;
+      margin-top: 16px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .all-posts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .post-item {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .post-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 12px;
+    }
+
+    .post-item .post-caption {
+      margin: 0;
+    }
+
+    .post-item .post-author {
+      margin-top: 10px;
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .post-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .post-action {
+      width: 100%;
+      max-width: 180px;
+      min-height: 44px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      padding: 0 12px;
+      font-size: 14px;
+      background: #ffffff;
+      color: #111827;
+      cursor: pointer;
+    }
+
+    .post-action-label {
+      color: #4b5563;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 720px) {
+      .all-posts {
+        grid-template-columns: 1fr;
+      }
+
+      .post-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+      .all-posts {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .post-caption {
       color: #374151;
       font-size: 15px;
@@ -231,10 +316,24 @@
     }
 
     #logoutLink {
-      width: 50%;
-      max-width: 220px;
-      margin: 0 auto;
+      width: auto;
+      max-width: none;
+      margin: 0;
       padding: 12px 24px;
+      align-self: flex-start;
+    }
+
+    .dashboard-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .dashboard-top h1 {
+      margin: 0;
     }
 
     button:hover,
@@ -328,7 +427,10 @@
 
   <div class="page">
     <main class="dashboard">
-      <h1>Dashboard</h1>
+      <div class="dashboard-top">
+        <h1>Dashboard</h1>
+        <a id="logoutLink" href="/">Log out</a>
+      </div>
       <p id="dashboardMessage">You are logged in successfully.</p>
 
       <form id="postForm" class="post-form">
@@ -346,9 +448,9 @@
       <div id="postPreview" class="post-preview">
         <h2>Latest Post</h2>
         <div id="postContent" class="post-content"><p class="meta">No post added yet.</p></div>
+        <button id="viewMorePosts" type="button" class="warning">View more</button>
+        <div id="allPostsList" class="all-posts"></div>
       </div>
-
-      <a id="logoutLink" href="/">Log out</a>
     </main>
 
     <section id="adminPanel" class="admin-panel">
@@ -366,6 +468,8 @@
     const imagePreview = document.getElementById("imagePreview");
     const postCaption = document.getElementById("postCaption");
     const postContent = document.getElementById("postContent");
+    const viewMorePosts = document.getElementById("viewMorePosts");
+    const allPostsList = document.getElementById("allPostsList");
     const adminPanel = document.getElementById("adminPanel");
     const userList = document.getElementById("userList");
     const dashboardMessage = document.getElementById("dashboardMessage");
@@ -428,6 +532,113 @@
         postContent.innerHTML = "<p class=\"meta\">No post added yet.</p>";
       }
     }
+
+    async function renderAllPosts() {
+      try {
+        viewMorePosts.disabled = true;
+        allPostsList.innerHTML = "<p class='meta'>Loading posts...</p>";
+
+        const response = await fetch("/api/posts/all");
+        if (!response.ok) {
+          const text = await response.text();
+          console.error("Failed to load posts:", text);
+          allPostsList.innerHTML = "<p class='meta'>Could not load posts.</p>";
+          return;
+        }
+
+        const data = await response.json();
+        const posts = data.posts || [];
+
+        if (!posts.length) {
+          allPostsList.innerHTML = "<p class='meta'>No posts available yet.</p>";
+          return;
+        }
+
+        allPostsList.innerHTML = posts.map(post => `
+          <div class="post-item">
+            <img src="${escapeHtml(post.image)}" alt="Post image" loading="lazy">
+            <p class="post-caption">${escapeHtml(post.caption)}</p>
+            <p class="post-author">Posted by ${escapeHtml(post.authorEmail || "Unknown")}</p>
+            ${isAdmin() ? `
+              <div class="post-actions">
+                <span class="post-action-label">Admin action</span>
+                <select class="post-action" data-id="${escapeHtml(post.id)}">
+                  <option value="">Select action</option>
+                  <option value="edit">Edit caption</option>
+                  <option value="delete">Delete post</option>
+                </select>
+              </div>
+            ` : ""}
+          </div>
+        `).join("");
+
+        attachPostActionHandlers();
+      } catch (error) {
+        console.error("renderAllPosts error:", error);
+        allPostsList.innerHTML = "<p class='meta'>Could not load posts.</p>";
+      } finally {
+        viewMorePosts.disabled = false;
+      }
+    }
+
+    function attachPostActionHandlers() {
+      const actionSelects = allPostsList.querySelectorAll(".post-action");
+      actionSelects.forEach(select => {
+        select.addEventListener("change", async function () {
+          const action = this.value;
+          const postId = this.dataset.id;
+          if (!action || !postId) {
+            return;
+          }
+
+          if (action === "delete") {
+            if (!confirm("Delete this post?")) {
+              this.value = "";
+              return;
+            }
+
+            try {
+              await apiPost("/api/posts/delete", {
+                id: postId,
+                adminEmail: currentUser.email
+              });
+              showNotification("Post deleted successfully.", "success");
+              await renderSavedPost();
+              await renderAllPosts();
+            } catch (error) {
+              showNotification(error.message || "Could not delete post.");
+            }
+          }
+
+          if (action === "edit") {
+            const newCaption = prompt("Enter a new caption:", "");
+            if (newCaption === null) {
+              this.value = "";
+              return;
+            }
+
+            try {
+              await apiPost("/api/posts/update-caption", {
+                id: postId,
+                caption: newCaption.trim(),
+                adminEmail: currentUser.email
+              });
+              showNotification("Caption updated successfully.", "success");
+              await renderSavedPost();
+              await renderAllPosts();
+            } catch (error) {
+              showNotification(error.message || "Could not update caption.");
+            }
+          }
+
+          this.value = "";
+        });
+      });
+    }
+
+    viewMorePosts.addEventListener("click", async function () {
+      await renderAllPosts();
+    });
 
     postForm.addEventListener("submit", async function (event) {
       event.preventDefault();

@@ -9,6 +9,9 @@ const deleteUser = require("./api/delete-user");
 const toggleBlock = require("./api/toggle-block");
 const uploadPost = require("./api/upload-post");
 const getLatestPost = require("./api/get-latest-post");
+const getAllPosts = require("./api/get-all-posts");
+const deletePost = require("./api/delete-post");
+const updatePostCaption = require("./api/update-post-caption");
 
 const PORT = process.env.PORT || 3000;
 
@@ -120,6 +123,23 @@ const server = http.createServer(async (request, response) => {
 
     if (request.method === "GET" && pathname === "/api/posts/latest") {
       await getLatestPost(request, createApiResponse(response));
+      return;
+    }
+
+    if (request.method === "GET" && pathname === "/api/posts/all") {
+      await getAllPosts(request, createApiResponse(response));
+      return;
+    }
+
+    if (request.method === "POST" && pathname === "/api/posts/delete") {
+      request.body = await readRequestBody(request);
+      await deletePost(request, createApiResponse(response));
+      return;
+    }
+
+    if (request.method === "POST" && pathname === "/api/posts/update-caption") {
+      request.body = await readRequestBody(request);
+      await updatePostCaption(request, createApiResponse(response));
       return;
     }
 
