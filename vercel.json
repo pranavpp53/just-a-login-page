@@ -1,5 +1,10 @@
 {
+  "version": 2,
   "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
     {
       "source": "/signup",
       "destination": "/signup.html"
@@ -7,6 +12,10 @@
     {
       "source": "/dashboard",
       "destination": "/dashboard.html"
+    },
+    {
+      "source": "/browser-image-compression.js",
+      "destination": "/public/browser-image-compression.js"
     }
   ]
 }
