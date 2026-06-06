@@ -121,8 +121,11 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
-  if (request.method === "GET" && pathname.startsWith("/public/")) {
-    const assetPath = path.join(__dirname, pathname);
+  if (request.method === "GET" && (pathname.startsWith("/public/") || pathname === "/browser-image-compression.js")) {
+    const assetPath = pathname.startsWith("/public/")
+      ? path.join(__dirname, pathname)
+      : path.join(__dirname, "public", pathname.slice(1));
+
     if (fs.existsSync(assetPath) && fs.statSync(assetPath).isFile()) {
       const ext = path.extname(assetPath).toLowerCase();
       const mimeTypes = {
