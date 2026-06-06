@@ -39,16 +39,30 @@ async function uploadPost(request, response) {
     return sendJson(response, { error: "Caption is required." }, 400);
   }
 
+  if (!authorEmail) {
+    return sendJson(response, { error: "You must be signed in to post." }, 401);
+  }
+
   try {
+    const database = await getDatabase();
+    const author = await database.collection("users").findOne({ email: authorEmail });
+
+    if (!author) {
+      return sendJson(response, { error: "You must be signed in to post." }, 401);
+    }
+
+    if (author.blocked) {
+      return sendJson(response, { error: "Your account has been blocked." }, 403);
+    }
+
     const uploadResult = await cloudinary.uploader.upload(image, {
       folder: "dashboard_posts"
     });
 
-    const database = await getDatabase();
     const post = {
       imageUrl: uploadResult.secure_url,
       caption: caption,
-      authorEmail: authorEmail || null,
+      authorEmail: authorEmail,
       createdAt: new Date()
     };
 
