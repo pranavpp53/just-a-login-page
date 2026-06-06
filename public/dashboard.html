@@ -370,7 +370,6 @@
     const userList = document.getElementById("userList");
     const dashboardMessage = document.getElementById("dashboardMessage");
     const currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
-    const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
     let notificationTimer;
 
     postImage.addEventListener("change", function () {
@@ -387,14 +386,6 @@
           imagePreview.classList.remove("active");
           imagePreview.innerHTML = "";
           showNotification("Only image formats are allowed.");
-          postImage.value = "";
-          return;
-        }
-
-        if (file.size > MAX_IMAGE_SIZE) {
-          imagePreview.classList.remove("active");
-          imagePreview.innerHTML = "";
-          showNotification("Image must be 2MB or smaller.");
           postImage.value = "";
           return;
         }
