@@ -9,6 +9,7 @@ const deleteUser = require("./api/delete-user");
 const toggleBlock = require("./api/toggle-block");
 const uploadPost = require("./api/upload-post");
 const getLatestPost = require("./api/get-latest-post");
+const userStatus = require("./api/user-status");
 
 const PORT = process.env.PORT || 3000;
 
@@ -120,6 +121,11 @@ const server = http.createServer(async (request, response) => {
 
     if (request.method === "GET" && pathname === "/api/posts/latest") {
       await getLatestPost(request, createApiResponse(response));
+      return;
+    }
+
+    if (request.method === "GET" && pathname === "/api/user-status") {
+      await userStatus(request, createApiResponse(response));
       return;
     }
 

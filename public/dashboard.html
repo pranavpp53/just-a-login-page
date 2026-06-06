@@ -433,6 +433,11 @@
       event.preventDefault();
 
       try {
+        if (await isBlocked()) {
+          forceLogout("Your account has been blocked.");
+          return;
+        }
+
         const file = postImage.files[0];
         const caption = postCaption.value.trim();
 
@@ -485,6 +490,11 @@
 
             let data;
             if (!response.ok) {
+              if (response.status === 401 || response.status === 403) {
+                forceLogout("Your account has been blocked.");
+                return;
+              }
+
               const text = await response.text();
               try {
                 data = JSON.parse(text);
@@ -518,6 +528,43 @@
         showNotification("An error occurred while submitting the post.");
       }
     });
+
+    function forceLogout(message) {
+      try {
+        localStorage.removeItem("currentUser");
+        showNotification(message || "Your account has been blocked.");
+        setTimeout(function () {
+          window.location.href = "/";
+        }, 1200);
+      } catch (error) {
+        console.error("Force logout error:", error);
+        window.location.href = "/";
+      }
+    }
+
+    async function isBlocked() {
+      try {
+        if (!currentUser || !currentUser.email) {
+          return true;
+        }
+
+        const response = await fetch(`/api/user-status?email=${encodeURIComponent(currentUser.email)}`);
+
+        if (response.status === 404) {
+          return true;
+        }
+
+        if (!response.ok) {
+          return false;
+        }
+
+        const data = await response.json();
+        return Boolean(data.blocked);
+      } catch (error) {
+        console.error("Status check error:", error);
+        return false;
+      }
+    }
 
     function showNotification(text, type = "error") {
       try {
@@ -718,6 +765,11 @@
     } else {
       (async function initDashboard() {
         try {
+          if (!isAdmin() && await isBlocked()) {
+            forceLogout("Your account has been blocked.");
+            return;
+          }
+
           dashboardMessage.textContent = isAdmin()
             ? "You are logged in as admin."
             : "You are logged in successfully.";
