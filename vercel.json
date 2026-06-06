@@ -3,15 +3,15 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/index.html"
+      "destination": "/public/index.html"
     },
     {
       "source": "/signup",
-      "destination": "/signup.html"
+      "destination": "/public/signup.html"
     },
     {
       "source": "/dashboard",
-      "destination": "/dashboard.html"
+      "destination": "/public/dashboard.html"
     },
     {
       "source": "/browser-image-compression.js",

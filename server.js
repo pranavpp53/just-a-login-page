@@ -70,7 +70,7 @@ function addQueryToRequest(request) {
 
 function sendHtml(response, fileName) {
   try {
-    const htmlFile = path.join(__dirname, fileName);
+    const htmlFile = path.join(__dirname, "public", fileName);
     const html = fs.readFileSync(htmlFile, "utf8");
 
     response.writeHead(200, { "Content-Type": "text/html" });
