@@ -132,6 +132,27 @@
       text-align: left;
     }
 
+    .image-preview {
+      width: 120px;
+      height: 120px;
+      border: 2px dashed #d1d5db;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      display: none;
+      overflow: hidden;
+      background: #f9fafb;
+    }
+
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-preview.active {
+      display: block;
+    }
+
     .post-preview {
       margin-top: 24px;
       text-align: left;
@@ -139,9 +160,13 @@
 
     .post-preview img {
       width: 100%;
+      max-width: 100%;
+      height: auto;
       border-radius: 14px;
       margin-bottom: 12px;
       display: block;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
     }
 
     .post-caption {
@@ -309,6 +334,7 @@
         <h2>Create Post</h2>
         <label for="postImage">Post image</label>
         <input id="postImage" name="postImage" type="file" accept="image/*">
+        <div id="imagePreview" class="image-preview"></div>
 
         <label for="postCaption">Caption</label>
         <textarea id="postCaption" name="postCaption" placeholder="Write a caption..."></textarea>
@@ -336,6 +362,7 @@
     const logoutLink = document.getElementById("logoutLink");
     const postForm = document.getElementById("postForm");
     const postImage = document.getElementById("postImage");
+    const imagePreview = document.getElementById("imagePreview");
     const postCaption = document.getElementById("postCaption");
     const postContent = document.getElementById("postContent");
     const adminPanel = document.getElementById("adminPanel");
@@ -343,6 +370,29 @@
     const dashboardMessage = document.getElementById("dashboardMessage");
     const currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
     let notificationTimer;
+
+    postImage.addEventListener("change", function () {
+      const file = postImage.files[0];
+
+      if (!file) {
+        imagePreview.classList.remove("active");
+        imagePreview.innerHTML = "";
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        imagePreview.classList.remove("active");
+        imagePreview.innerHTML = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        imagePreview.classList.add("active");
+      };
+      reader.readAsDataURL(file);
+    });
 
     async function renderSavedPost() {
       try {
@@ -362,7 +412,7 @@
         }
 
         postContent.innerHTML = `
-          <img src="${escapeHtml(data.post.image)}" alt="Post image">
+          <img src="${escapeHtml(data.post.image)}" alt="Post image" loading="lazy">
           <p class="post-caption">${escapeHtml(data.post.caption)}</p>
         `;
       } catch (error) {
@@ -379,6 +429,14 @@
 
       if (!file) {
         showNotification("Please choose an image.");
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        showNotification("Only image formats are allowed.");
+        postImage.value = "";
+        imagePreview.classList.remove("active");
+        imagePreview.innerHTML = "";
         return;
       }
 
@@ -419,6 +477,8 @@
           await renderSavedPost();
           postCaption.value = "";
           postImage.value = "";
+          imagePreview.classList.remove("active");
+          imagePreview.innerHTML = "";
           showNotification("Post added successfully.", "success");
         } catch (error) {
           console.error(error);
