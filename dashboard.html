@@ -16,21 +16,33 @@
       min-height: 100vh;
       background: #f4f7fb;
       color: #111827;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       padding: 24px;
     }
 
-    .dashboard {
+    .page {
       width: 100%;
-      max-width: 390px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .dashboard,
+    .admin-panel,
+    .user-card {
       background: #ffffff;
       border: 1px solid #e5e7eb;
       border-radius: 14px;
-      padding: 32px 24px;
       box-shadow: 0 18px 45px rgba(17, 24, 39, 0.12);
+    }
+
+    .dashboard {
+      padding: 32px 24px;
       text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .admin-panel {
+      display: none;
+      padding: 24px;
     }
 
     h1 {
@@ -40,6 +52,12 @@
       margin-bottom: 12px;
     }
 
+    h2 {
+      color: #111827;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
     p {
       color: #6b7280;
       font-size: 15px;
@@ -47,16 +65,98 @@
       margin-bottom: 24px;
     }
 
+    .user-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .user-card {
+      padding: 16px;
+    }
+
+    .user-card.blocked {
+      border-color: #fecdd3;
+      background: #fff5f6;
+    }
+
+    .user-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 15px;
+      color: #111827;
+      background: #f9fafb;
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.16);
+    }
+
+    .meta {
+      color: #6b7280;
+      font-size: 13px;
+      margin: 10px 0 0;
+      text-align: left;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: #16a34a;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    .status.blocked {
+      background: #e11d48;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button,
     a {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 100%;
+      min-height: 46px;
       color: #fff;
-      padding: 15px 25px;
+      padding: 12px 16px;
       border-radius: 10px;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 15px;
       border: 0;
       user-select: none;
       -webkit-user-select: none;
@@ -68,12 +168,29 @@
       transition: all 150ms ease-in-out;
     }
 
+    button:hover,
     a:hover {
       filter: brightness(1.05);
     }
 
+    button:active,
     a:active {
       transform: scale(.95);
+    }
+
+    .danger {
+      background: #e11d48;
+      box-shadow: 0 10px 20px rgba(225, 29, 72, 0.24);
+    }
+
+    .warning {
+      background: #f59e0b;
+      box-shadow: 0 10px 20px rgba(245, 158, 11, 0.24);
+    }
+
+    .success {
+      background: #16a34a;
+      box-shadow: 0 10px 20px rgba(22, 163, 74, 0.24);
     }
 
     .notification {
@@ -88,9 +205,8 @@
       font-size: 14px;
       font-weight: 700;
       line-height: 1.4;
-      background-color: #7F00FF;
-      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .23) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .55) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
-      box-shadow: rgba(255, 255, 255, 0.1) -3px -3px 9px inset, rgba(255, 255, 255, 0.15) 0 3px 9px inset, rgba(255, 255, 255, 0.6) 0 1px 1px inset, rgba(0, 0, 0, 0.3) 0 -8px 36px inset, rgba(255, 255, 255, 0.6) 0 1px 5px inset, rgba(0, 0, 0, 0.2) 2px 19px 31px;
+      background: #4f46e5;
+      box-shadow: 0 18px 45px rgba(17, 24, 39, 0.18);
       opacity: 0;
       pointer-events: none;
       transform: translate(-50%, -18px);
@@ -99,8 +215,11 @@
     }
 
     .notification.error {
-      background-color: #e11d48;
-      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .24) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .42) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+      background: #e11d48;
+    }
+
+    .notification.success {
+      background: #16a34a;
     }
 
     .notification.show {
@@ -108,46 +227,219 @@
       transform: translate(-50%, 0);
     }
 
-    @media (max-width: 360px) {
+    @media (min-width: 640px) {
+      .user-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 420px) {
       body {
         padding: 16px;
       }
 
-      .dashboard {
-        padding: 28px 18px;
+      .dashboard,
+      .admin-panel {
+        padding: 24px 18px;
       }
 
       h1 {
         font-size: 25px;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
   <div id="notification" class="notification"></div>
-  <main class="dashboard">
-    <h1>Dashboard</h1>
-    <p>You are logged in successfully.</p>
-    <a id="logoutLink" href="/">Log out</a>
-  </main>
+
+  <div class="page">
+    <main class="dashboard">
+      <h1>Dashboard</h1>
+      <p id="dashboardMessage">You are logged in successfully.</p>
+      <a id="logoutLink" href="/">Log out</a>
+    </main>
+
+    <section id="adminPanel" class="admin-panel">
+      <h2>Created Users</h2>
+      <p>Admin controls for viewing, editing, deleting, blocking, and unblocking users.</p>
+      <div id="userList" class="user-list"></div>
+    </section>
+  </div>
 
   <script>
     const notification = document.getElementById("notification");
     const logoutLink = document.getElementById("logoutLink");
+    const adminPanel = document.getElementById("adminPanel");
+    const userList = document.getElementById("userList");
+    const dashboardMessage = document.getElementById("dashboardMessage");
+    const currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
+    let notificationTimer;
 
-    function showNotification(text) {
+    function showNotification(text, type = "error") {
+      clearTimeout(notificationTimer);
       notification.textContent = text;
-      notification.classList.add("error", "show");
+      notification.classList.remove("error", "success");
+      notification.classList.add(type);
+      notification.classList.add("show");
+
+      notificationTimer = setTimeout(function () {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+
+    function isAdmin() {
+      return currentUser && currentUser.email === "admin@gmail.com";
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    async function apiPost(url, data) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed.");
+      }
+
+      return response.json();
+    }
+
+    async function loadUsers() {
+      const response = await fetch(`/api/users?adminEmail=${encodeURIComponent(currentUser.email)}`);
+
+      if (!response.ok) {
+        showNotification("Could not load users.");
+        return;
+      }
+
+      const data = await response.json();
+      renderUsers(data.users || []);
+    }
+
+    function renderUsers(users) {
+      userList.innerHTML = users.map(user => {
+        const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleString() : "Not available";
+        const isAdminUser = user.email === "admin@gmail.com";
+        const statusText = user.blocked ? "Blocked" : "Active";
+        const blockButtonText = user.blocked ? "Unblock" : "Block";
+        const blockButtonClass = user.blocked ? "success" : "warning";
+
+        return `
+          <div class="user-card ${user.blocked ? "blocked" : ""}" data-id="${escapeHtml(user.id)}">
+            <div class="user-grid">
+              <div>
+                <label>Email</label>
+                <input class="edit-email" value="${escapeHtml(user.email)}" ${isAdminUser ? "disabled" : ""}>
+              </div>
+              <div>
+                <label>Username</label>
+                <input class="edit-username" value="${escapeHtml(user.username)}">
+              </div>
+              <div>
+                <label>Password</label>
+                <input class="edit-password" value="${escapeHtml(user.password)}">
+              </div>
+            </div>
+            <p class="meta">Created: ${escapeHtml(createdDate)}</p>
+            <span class="status ${user.blocked ? "blocked" : ""}">${statusText}${isAdminUser ? " Admin" : ""}</span>
+            <div class="actions">
+              <button type="button" onclick="updateUser('${escapeHtml(user.id)}')" ${isAdminUser ? "disabled" : ""}>Save</button>
+              <button type="button" class="${blockButtonClass}" onclick="toggleBlock('${escapeHtml(user.id)}')" ${isAdminUser ? "disabled" : ""}>${blockButtonText}</button>
+              <button type="button" class="danger" onclick="deleteUser('${escapeHtml(user.id)}')" ${isAdminUser ? "disabled" : ""}>Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function updateUser(id) {
+      const card = document.querySelector(`[data-id="${id}"]`);
+
+      try {
+        await apiPost("/api/update-user", {
+          adminEmail: currentUser.email,
+          id: id,
+          email: card.querySelector(".edit-email").value.trim(),
+          username: card.querySelector(".edit-username").value.trim(),
+          password: card.querySelector(".edit-password").value.trim()
+        });
+
+        showNotification("User updated successfully.", "success");
+        await loadUsers();
+      } catch (error) {
+        showNotification("Could not update user.");
+      }
+    }
+
+    async function toggleBlock(id) {
+      try {
+        await apiPost("/api/toggle-block", {
+          adminEmail: currentUser.email,
+          id: id
+        });
+
+        showNotification("User status changed.", "success");
+        await loadUsers();
+      } catch (error) {
+        showNotification("Could not change user status.");
+      }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm("Delete this user?")) {
+        return;
+      }
+
+      try {
+        await apiPost("/api/delete-user", {
+          adminEmail: currentUser.email,
+          id: id
+        });
+
+        showNotification("User deleted.", "success");
+        await loadUsers();
+      } catch (error) {
+        showNotification("Could not delete user.");
+      }
     }
 
     logoutLink.addEventListener("click", function (event) {
       event.preventDefault();
+      localStorage.removeItem("currentUser");
       showNotification("Logged out. Redirecting...");
 
       setTimeout(function () {
         window.location.href = "/";
       }, 800);
     });
+
+    if (!currentUser) {
+      window.location.href = "/";
+    } else {
+      dashboardMessage.textContent = isAdmin()
+        ? "You are logged in as admin."
+        : "You are logged in successfully.";
+
+      if (isAdmin()) {
+        adminPanel.style.display = "block";
+        loadUsers();
+      }
+    }
   </script>
 </body>
 </html>

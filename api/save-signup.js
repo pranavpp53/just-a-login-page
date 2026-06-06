@@ -21,6 +21,7 @@ module.exports = async function handler(request, response) {
       email: signupData.email,
       username: signupData.username,
       password: signupData.password,
+      blocked: false,
       createdAt: new Date()
     });
 

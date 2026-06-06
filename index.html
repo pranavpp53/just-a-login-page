@@ -314,9 +314,17 @@
           return;
         }
 
+        if (response.status === 403) {
+          showNotification("Your account is blocked.");
+          return;
+        }
+
         if (!response.ok) {
           throw new Error("Could not log in.");
         }
+
+        const result = await response.json();
+        localStorage.setItem("currentUser", JSON.stringify(result.user));
 
         showNotification("Login successful. Redirecting...", "success");
         setTimeout(function () {

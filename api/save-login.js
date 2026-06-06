@@ -28,13 +28,26 @@ module.exports = async function handler(request, response) {
       return;
     }
 
+    if (user.blocked) {
+      response.status(403).json({ success: false });
+      return;
+    }
+
     await logins.insertOne({
       email: loginData.email,
       remember: Boolean(loginData.remember),
       createdAt: new Date()
     });
 
-    response.status(200).json({ success: true });
+    response.status(200).json({
+      success: true,
+      user: {
+        id: user._id.toString(),
+        email: user.email,
+        username: user.username,
+        isAdmin: user.email === "admin@gmail.com"
+      }
+    });
   } catch (error) {
     console.error("Login API error:", error);
     response.status(500).json({ success: false });
