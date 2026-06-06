@@ -14,15 +14,29 @@ cloudinary.config({
   api_secret: CLOUDINARY_API_SECRET
 });
 
+function sendJson(response, data, statusCode = 200) {
+  if (typeof response.json === "function") {
+    if (typeof response.status === "function") {
+      response.status(statusCode);
+    }
+    response.json(data);
+    return;
+  }
+
+  response.statusCode = statusCode;
+  response.setHeader("Content-Type", "application/json");
+  response.end(JSON.stringify(data));
+}
+
 async function uploadPost(request, response) {
   const { image, caption, authorEmail } = request.body || {};
 
   if (!image) {
-    return response.status(400).json({ error: "Image is required." });
+    return sendJson(response, { error: "Image is required." }, 400);
   }
 
   if (!caption) {
-    return response.status(400).json({ error: "Caption is required." });
+    return sendJson(response, { error: "Caption is required." }, 400);
   }
 
   try {
@@ -40,7 +54,7 @@ async function uploadPost(request, response) {
 
     const result = await database.collection("posts").insertOne(post);
 
-    response.json({
+    sendJson(response, {
       id: result.insertedId.toString(),
       url: uploadResult.secure_url,
       caption: caption,
@@ -49,7 +63,7 @@ async function uploadPost(request, response) {
     });
   } catch (error) {
     console.error("Cloudinary upload error:", error);
-    response.status(500).json({ error: "Image upload failed." });
+    sendJson(response, { error: "Image upload failed." }, 500);
   }
 }
 

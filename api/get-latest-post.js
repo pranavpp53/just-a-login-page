@@ -1,5 +1,19 @@
 const { getDatabase } = require("../lib/mongodb");
 
+function sendJson(response, data, statusCode = 200) {
+  if (typeof response.json === "function") {
+    if (typeof response.status === "function") {
+      response.status(statusCode);
+    }
+    response.json(data);
+    return;
+  }
+
+  response.statusCode = statusCode;
+  response.setHeader("Content-Type", "application/json");
+  response.end(JSON.stringify(data));
+}
+
 async function getLatestPost(request, response) {
   try {
     const database = await getDatabase();
@@ -11,10 +25,10 @@ async function getLatestPost(request, response) {
       .next();
 
     if (!post) {
-      return response.json({ post: null });
+      return sendJson(response, { post: null });
     }
 
-    response.json({
+    sendJson(response, {
       post: {
         id: post._id.toString(),
         image: post.imageUrl,
@@ -25,7 +39,7 @@ async function getLatestPost(request, response) {
     });
   } catch (error) {
     console.error("Error fetching latest post:", error);
-    response.status(500).json({ error: "Could not load latest post." });
+    sendJson(response, { error: "Could not load latest post." }, 500);
   }
 }
 
