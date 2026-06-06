@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f4f7fb;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-screen {
+      width: 100%;
+      max-width: 390px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 32px 24px;
+      box-shadow: 0 18px 45px rgba(17, 24, 39, 0.12);
+    }
+
+    .brand {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      background: #4f46e5;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      color: #111827;
+      font-size: 28px;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 16px;
+      color: #111827;
+      background: #f9fafb;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.16);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 2px 0 24px;
+      font-size: 14px;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #4b5563;
+      white-space: nowrap;
+    }
+
+    .remember input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: #4f46e5;
+    }
+
+    a {
+      color: #4f46e5;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    button {
+      width: 100%;
+      height: 50px;
+      border: 0;
+      border-radius: 8px;
+      background: #4f46e5;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.99);
+    }
+
+    .signup {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      margin-top: 24px;
+    }
+
+    .message {
+      color: #ffffff;
+      font-size: 14px;
+      margin-top: 16px;
+      min-height: 20px;
+      text-align: center;
+    }
+
+    .notification {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      width: calc(100% - 32px);
+      max-width: 390px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      background-color: #7F00FF;
+      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .23) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .55) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+      box-shadow: rgba(255, 255, 255, 0.1) -3px -3px 9px inset, rgba(255, 255, 255, 0.15) 0 3px 9px inset, rgba(255, 255, 255, 0.6) 0 1px 1px inset, rgba(0, 0, 0, 0.3) 0 -8px 36px inset, rgba(255, 255, 255, 0.6) 0 1px 5px inset, rgba(0, 0, 0, 0.2) 2px 19px 31px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -18px);
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 10;
+    }
+
+    .notification.error {
+      background-color: #e11d48;
+      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .24) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .42) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+    }
+
+    .notification.success {
+      background-color: #16a34a;
+      background-image: radial-gradient(93% 87% at 87% 89%, rgba(0, 0, 0, .22) 0, transparent 86.18%), radial-gradient(66% 66% at 26% 20%, rgba(255, 255, 255, .42) 0, rgba(255, 255, 255, 0) 69.79%, rgba(255, 255, 255, 0) 100%);
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 360px) {
+      body {
+        padding: 16px;
+      }
+
+      .login-screen {
+        padding: 28px 18px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    .button-38 {
+      color: #fff;
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      border: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.28);
+      background: #4f46e5;
+      transition: all 150ms ease-in-out;
+    }
+
+    .button-38:hover {
+      filter: brightness(1.05);
+    }
+
+    .button-38:active {
+      transform: scale(.95);
+    }
+
+  </style>
+</head>
+<body>
+  <div id="notification" class="notification"></div>
+  <main class="login-screen">
+    <div class="brand">L</div>
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to continue to your account.</p>
+
+    <form id="loginForm" novalidate>
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="Enter your password" required>
+
+      <div class="row">
+        <label class="remember">
+          <input id="remember" name="remember" type="checkbox">
+          Remember me
+        </label>
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <button class="button-38" type="submit">Log in</button>
+    </form>
+    <p id="message" class="message"></p>
+
+    <p class="signup">New here? <a href="/signup">Create account</a></p>
+  </main>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+    const notification = document.getElementById("notification");
+    let notificationTimer;
+
+    function showNotification(text, type = "error") {
+      clearTimeout(notificationTimer);
+      notification.textContent = text;
+      notification.classList.remove("error", "success");
+      notification.classList.add(type);
+      notification.classList.add("show");
+
+      notificationTimer = setTimeout(function () {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+
+    loginForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email) {
+        showNotification("Please enter your email address.");
+        return;
+      }
+
+      if (!password) {
+        showNotification("Please enter your password.");
+        return;
+      }
+
+      const formData = {
+        email: email,
+        password: password,
+        remember: document.getElementById("remember").checked
+      };
+
+      try {
+        const response = await fetch("/api/save-login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.status === 401) {
+          showNotification("Invalid email or password.");
+          return;
+        }
+
+        if (response.status === 403) {
+          showNotification("Your account is blocked.");
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Could not log in.");
+        }
+
+        const result = await response.json();
+        localStorage.setItem("currentUser", JSON.stringify(result.user));
+
+        showNotification("Login successful. Redirecting...", "success");
+        setTimeout(function () {
+          window.location.href = "/dashboard";
+        }, 800);
+      } catch (error) {
+        showNotification("Error logging in. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>
