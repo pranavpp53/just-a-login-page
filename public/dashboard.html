@@ -116,13 +116,13 @@
     textarea {
       width: 100%;
       border: 1px solid #d1d5db;
-      border-radius: 10px;
-      padding: 10px 12px;
+      border-radius: 14px;
+      padding: 14px 16px;
       font-size: 15px;
       color: #111827;
       background: #f9fafb;
       box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
-      min-height: 90px;
+      min-height: 110px;
       resize: vertical;
       margin-bottom: 18px;
     }
@@ -132,21 +132,115 @@
       text-align: left;
     }
 
-    .image-preview {
-      width: 120px;
-      height: 120px;
-      border: 2px dashed #d1d5db;
-      border-radius: 10px;
+    .post-form label {
+      display: block;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .post-form .form-group {
       margin-bottom: 18px;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #ffffff;
+      cursor: pointer;
+      transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    .file-input-wrapper:hover {
+      border-color: #4f46e5;
+      box-shadow: 0 10px 22px rgba(79, 70, 229, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .file-input-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 12px;
+      background: #4f46e5;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14px;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    .file-name {
+      color: #6b7280;
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      z-index: 1;
+    }
+
+    .file-input-wrapper:hover .file-name {
+      color: #4b5563;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .file-input-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .file-input-button {
+        width: 100%;
+      }
+    }
+
+    .image-preview {
+      width: 100%;
+      max-width: 280px;
+      min-height: 200px;
+      margin: 0 auto 18px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
       display: none;
       overflow: hidden;
-      background: #f9fafb;
+      text-align: center;
     }
 
     .image-preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      max-width: 100%;
+      max-height: 180px;
+      display: inline-block;
+      border-radius: 14px;
+      object-fit: contain;
     }
 
     .image-preview.active {
@@ -169,14 +263,54 @@
       object-fit: cover;
     }
 
-    #viewMorePosts {
-      width: auto;
-      max-width: 220px;
+    .posts-trailer {
+      display: grid;
+      gap: 10px;
       margin-top: 16px;
-      padding: 11px 18px;
-      border-radius: 10px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+      text-align: left;
+    }
+
+    .posts-trailer:hover {
+      transform: translateY(-1px);
+      border-color: #c7d2fe;
+      box-shadow: 0 12px 24px rgba(79, 70, 229, 0.12);
+    }
+
+    .trailer-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .trailer-item {
+      height: 68px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+
+    .trailer-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .trailer-label {
+      color: #374151;
+      font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.02em;
+      display: block;
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     .all-posts {
@@ -435,12 +569,20 @@
 
       <form id="postForm" class="post-form">
         <h2>Create Post</h2>
-        <label for="postImage">Post image</label>
-        <input id="postImage" name="postImage" type="file" accept="image/*">
-        <div id="imagePreview" class="image-preview"></div>
+        <div class="form-group">
+          <label for="postImage">Post image</label>
+          <div class="file-input-wrapper">
+            <span class="file-input-button">Choose image</span>
+            <span id="fileName" class="file-name">No file selected</span>
+            <input id="postImage" name="postImage" type="file" accept="image/*">
+          </div>
+          <div id="imagePreview" class="image-preview"></div>
+        </div>
 
-        <label for="postCaption">Caption</label>
-        <textarea id="postCaption" name="postCaption" placeholder="Write a caption..."></textarea>
+        <div class="form-group">
+          <label for="postCaption">Caption</label>
+          <textarea id="postCaption" name="postCaption" placeholder="Write a caption..."></textarea>
+        </div>
 
         <button type="submit" class="success">Add post</button>
       </form>
@@ -448,8 +590,11 @@
       <div id="postPreview" class="post-preview">
         <h2>Latest Post</h2>
         <div id="postContent" class="post-content"><p class="meta">No post added yet.</p></div>
-        <button id="viewMorePosts" type="button" class="warning">View more</button>
-        <div id="allPostsList" class="all-posts"></div>
+        <div id="postsTrailer" class="posts-trailer" role="button" tabindex="0">
+          <div class="trailer-list" id="trailerList"><p class="meta">Loading preview...</p></div>
+          <span class="trailer-label">Click to view all posts</span>
+        </div>
+        <div id="allPostsList" class="all-posts hidden"></div>
       </div>
     </main>
 
@@ -466,9 +611,11 @@
     const postForm = document.getElementById("postForm");
     const postImage = document.getElementById("postImage");
     const imagePreview = document.getElementById("imagePreview");
+    const fileName = document.getElementById("fileName");
     const postCaption = document.getElementById("postCaption");
     const postContent = document.getElementById("postContent");
-    const viewMorePosts = document.getElementById("viewMorePosts");
+    const postsTrailer = document.getElementById("postsTrailer");
+    const trailerList = document.getElementById("trailerList");
     const allPostsList = document.getElementById("allPostsList");
     const adminPanel = document.getElementById("adminPanel");
     const userList = document.getElementById("userList");
@@ -483,14 +630,18 @@
         if (!file) {
           imagePreview.classList.remove("active");
           imagePreview.innerHTML = "";
+          fileName.textContent = "No file selected";
           return;
         }
+
+        fileName.textContent = file.name;
 
         if (!file.type.startsWith("image/")) {
           imagePreview.classList.remove("active");
           imagePreview.innerHTML = "";
           showNotification("Only image formats are allowed.");
           postImage.value = "";
+          fileName.textContent = "No file selected";
           return;
         }
 
@@ -535,7 +686,8 @@
 
     async function renderAllPosts() {
       try {
-        viewMorePosts.disabled = true;
+        postsTrailer.classList.add("hidden");
+        allPostsList.classList.remove("hidden");
         allPostsList.innerHTML = "<p class='meta'>Loading posts...</p>";
 
         const response = await fetch("/api/posts/all");
@@ -576,10 +728,50 @@
       } catch (error) {
         console.error("renderAllPosts error:", error);
         allPostsList.innerHTML = "<p class='meta'>Could not load posts.</p>";
-      } finally {
-        viewMorePosts.disabled = false;
       }
     }
+
+    async function renderPostsTrailer() {
+      try {
+        trailerList.innerHTML = "<p class='meta'>Loading preview...</p>";
+
+        const response = await fetch("/api/posts/all");
+        if (!response.ok) {
+          const text = await response.text();
+          console.error("Failed to load trailer posts:", text);
+          trailerList.innerHTML = "<p class='meta'>Unable to load preview.</p>";
+          return;
+        }
+
+        const data = await response.json();
+        const posts = data.posts || [];
+
+        if (!posts.length) {
+          trailerList.innerHTML = "<p class='meta'>No posts available yet.</p>";
+          return;
+        }
+
+        trailerList.innerHTML = posts.slice(0, 3).map(post => `
+          <div class="trailer-item">
+            <img src="${escapeHtml(post.image)}" alt="Post preview" loading="lazy">
+          </div>
+        `).join("");
+      } catch (error) {
+        console.error("renderPostsTrailer error:", error);
+        trailerList.innerHTML = "<p class='meta'>Unable to load preview.</p>";
+      }
+    }
+
+    postsTrailer.addEventListener("click", async function () {
+      await renderAllPosts();
+    });
+
+    postsTrailer.addEventListener("keypress", async function (event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        await renderAllPosts();
+      }
+    });
 
     function attachPostActionHandlers() {
       const actionSelects = allPostsList.querySelectorAll(".post-action");
@@ -635,10 +827,6 @@
         });
       });
     }
-
-    viewMorePosts.addEventListener("click", async function () {
-      await renderAllPosts();
-    });
 
     postForm.addEventListener("submit", async function (event) {
       event.preventDefault();
@@ -708,8 +896,10 @@
             data = await response.json();
 
             await renderSavedPost();
+            await renderPostsTrailer();
             postCaption.value = "";
             postImage.value = "";
+            fileName.textContent = "No file selected";
             imagePreview.classList.remove("active");
             imagePreview.innerHTML = "";
             showNotification("Post added successfully.", "success");
@@ -934,6 +1124,7 @@
             : "You are logged in successfully.";
 
           await renderSavedPost();
+          await renderPostsTrailer();
 
           if (isAdmin()) {
             adminPanel.style.display = "block";
